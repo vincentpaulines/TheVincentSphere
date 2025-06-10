@@ -1,0 +1,184 @@
+body {
+  background-color: black;
+  background-image: url("flower.png"), url("flower2.png"),url("starsky.png");
+  background-size: 240px, 240px, auto;
+  background-position: left top, right top, left top;
+  background-repeat: repeat-y, repeat-y, repeat;
+  margin-bottom: 80px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.topbox{
+  color: white;
+}
+
+.topbox h4{
+  padding-top: 10px;
+  padding-left: 170px;
+  background-color: rgba(19, 43, 94, 0.9);
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.banner img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 2px;
+  margin-bottom: -15px;
+}
+
+#posts >:not(.topbox){
+  width: 800px;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.entire-post{
+  box-shadow: 0 0 5px 3px #888888;
+  padding-top: 5px;
+  margin-bottom: 20px;
+}
+
+.post-information{
+  color: white;
+  height: auto;
+  min-height: 150px;
+  border: none;
+  margin-left: 30px;
+  margin-bottom: 100px;
+}
+
+.post-information .title{
+  font-size: 20px;
+}
+
+.post-information .timestamp{
+  font-size: 12px;
+  position: absolute;
+  top: 25px;
+  left: 80%;
+}
+
+.text-editor-header {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px;
+}
+
+.editor {
+  color: white;
+  height: auto;
+  min-height: 150px;
+  border: none;
+}
+
+.comment-button {
+  background-color: transparent;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: none;
+  margin-left: 10px;
+  box-shadow: 0 0 3px 2px #888888;
+  cursor: pointer;
+}
+
+.exit-comment-button {
+  background-color: transparent;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: none;
+  margin-left: 10px;
+  box-shadow: 0 0 3px 2px #888888;
+  margin-bottom: 4px;
+  margin-top: -8px;
+  cursor: pointer;
+}
+
+.text-editor-header i{
+  color:white;
+}
+
+.text-editor-header .btn {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.ImgCmd {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.comment-form .content {
+  min-height: 200px;
+  border: 1px solid #ecf0f1;
+  border-top: 0px;
+  padding: 20px;
+}
+
+.comment{
+  color: white;
+  margin-top: 5px;
+}
+
+.comment .comment-meta{
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.comment .comment-content-text{
+  margin-left: 10px;
+  margin-bottom: 10px;
+  font-size: 17px;
+}
+
+.reply-btn{
+  background-color: transparent;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border: none;
+  box-shadow: 0 0 3px 2px #888888;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.exit-reply-button{
+  background-color: transparent;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border: none;
+  box-shadow: 0 0 3px 2px #888888;
+  cursor: pointer;
+  margin-bottom: 4px;
+  margin-top: -8px;
+}
+
+.reply-form .content {
+  min-height: 200px;
+  border: 1px solid #ecf0f1;
+  border-top: 0px;
+  padding: 20px;
+}
+

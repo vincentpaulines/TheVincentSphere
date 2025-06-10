@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Make It Interesting!</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script src = "/TextEditor.js"></script>
+		<link rel="stylesheet" href="/styles4.css">
+	</head>
+	<body>
+		<div class="topbox">
+			<div class="banner">
+				<img src="banners/evangelion.jpg" height="175px">
+			</div>
+		</div>
+		<div class="main-content">
+			<form action="/post" method="POST" onsubmit="return syncEditors(this);">
+				<textarea class="titletextarea" name="title" placeholder="Title" required></textarea>
+				<div class="text-editor">
+					<div class="text-editor-header">
+						<button type="button" class="btn" data-element="bold">
+							<i class="fa fa-bold"></i>
+						</button>
+						<button type="button" class="btn" data-element="italic">
+							<i class="fa fa-italic"></i>
+						</button>
+						<button type="button" class="btn" data-element="underline">
+							<i class="fa fa-underline"></i>
+						</button>
+						<button type="button" class="btn" data-element="insertUnorderedList">
+							<i class="fa fa-list-ul"></i>
+						</button>
+						<button type="button" class="btn" data-element="insertOrderedList">
+							<i class="fa fa-list-ol"></i>
+						</button>
+						<button type="button" class="btn" data-element="createLink">
+							<i class="fa fa-link"></i>
+						</button>
+						<button type="button" class="btn" data-element="insertYoutube">
+							<i class="fa fa-youtube-play"></i>
+						</button>
+						<button type="button" class="btn" data-element="justifyLeft">
+							<i class="fa fa-align-left"></i>
+						</button>
+						<button type="button" class="btn" data-element="justifyCenter">
+							<i class="fa fa-align-center"></i>
+						</button>
+						<button type="button" class="btn" data-element="justifyRight">
+							<i class="fa fa-align-right"></i>
+						</button>
+						<button type="button" class="btn" data-element="justifyFull">
+							<i class="fa fa-align-justify"></i>
+						</button>
+						<input type="file" id="fileInput" accept="image/*" style="display: none" onchange="uploadImage(event)">
+						<button type="button" id = "ImgCmd" onclick="document.getElementById('fileInput').click()">
+							<i class="fa fa-image"></i>
+						</button>
+					</div>
+
+					<div class="editor" contenteditable="true" data-name="content" placeholder="Text"></div>
+					<input type="hidden" name="content">
+				</div>
+				<div class="centerbutton">
+					<button class="submitbutton" type="submit">Post</button>
+				</div>
+				<br></br>
+			</form>
+		</div>
+		<div class="back">
+			<button type="button2" onclick="location.href='/general'">Go Back</button>
+		</div>
+	</body>
+	<script>
+		const textarea = document.querySelector('.editor');
+		var elements = document.querySelectorAll('.text-editor .btn');
+			elements.forEach(element => {
+        	element.addEventListener('click', () => {
+        	let command = element.dataset['element'];
+
+		    if (command == 'createLink') {
+		      let url = prompt('Enter the link here:');
+		      document.execCommand(command, false, url);
+		      textarea.focus();
+		    }
+		    else if (command != 'insertYoutube') {
+		      document.execCommand(command, false, null);
+		      textarea.focus();
+		    }
+		    else {
+		      let yturl = prompt('Enter the link here:');
+		      document.execCommand("createLink", false, yturl);
+
+		      const ytElement = document.createElement('iframe');
+		      const breakline = document.createElement('br')
+		      const targetDiv = document.querySelector('.editor');
+		      let embedid = youtube_parser(yturl);
+
+		      ytElement.src = 'https://www.youtube.com/embed/' + embedid;
+		      ytElement.width = '420';
+		      ytElement.height = '315';
+		      ytElement.frameBorder = '0';
+
+		      targetDiv.appendChild(breakline);
+		      targetDiv.appendChild(ytElement);
+		      textarea.focus();
+		    }
+		  })
+		})
+
+		window.onload = function () {
+		  document.getElementById('ImgCmd').onclick = function () {
+		    const fileInput = document.getElementById('fileInput');
+		    fileInput.click();
+
+		    fileInput.onchange = function (event) {
+		      const file = event.target.files[0];
+		      if (!file) return alert('No image selected');
+
+		      const formData = new FormData();
+		      formData.append('image', file);
+
+		      fetch('/upload-image', {
+		        method: 'POST',
+		        body: formData
+		      })
+		      .then(res => res.json())
+		      .then(data => {
+		        const imageUrl = data.url;
+		        const postBox = document.querySelector('.editor');
+		        postBox.innerHTML += `<img src="${imageUrl}" alt="uploaded image" style="max-width: 300px">`;
+		        fileInput.value = '';
+		      })
+		      .catch(err => {
+		        console.error(err);
+		        alert('Upload failed');
+		      });
+		    };
+		  };
+		};
+
+	</script>
+</html>

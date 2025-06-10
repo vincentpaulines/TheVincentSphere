@@ -1,0 +1,65 @@
+body{
+	background-color: black;
+	background-image: url("flower.png"), url("flower2.png"),url("starsky.png");
+	background-size: 240px, 240px, auto;
+	background-position: left top, right top, left top;
+	background-repeat: repeat-y, repeat-y, repeat;
+}
+
+a{
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+h1{
+	font-size: 40px;
+	text-shadow:1px 1px 10px white;
+}
+
+iframe{
+  box-shadow: 0 0 5px 3px #888888;
+}
+
+
+.movedbox{
+	position: relative;
+}
+
+.coloredbox{
+	background-color: rgba(31, 68, 144, 0.5);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%);
+	width: 1100px;
+	margin-top: 10px;
+	box-shadow: 0 0 10px 5px #888888;
+}
+
+.beginning{
+	color: white;
+	text-align: center;
+	margin-top: 50px;
+}
+
+.introduction{
+	color: white;
+	width: 500px;
+	margin: 0 auto;
+	text-align: left;
+	margin-bottom: 30px;
+	margin-top: 40px;
+}
+
+.links{
+	color: white;
+	position: relative;
+	margin-left: 20.5vw;
+	margin-bottom: 50px;
+}
+
+.ul-link1,
+.ul-link2{
+	text-align: left;
+}

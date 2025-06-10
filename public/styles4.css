@@ -1,0 +1,121 @@
+body {
+  background-color: black;
+  background-image: url("flower.png"), url("flower2.png"),url("starsky.png");
+  background-size: 240px, 240px, auto;
+  background-position: left top, right top, left top;
+  background-repeat: repeat-y, repeat-y, repeat;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.main-content {
+  width: 800px;
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  box-shadow: 0 0 5px 3px #888888;
+}
+
+.text-editor-header {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px;
+}
+
+.editor {
+  color: white;
+  height: auto;
+  min-height: 150px;
+  border: none;
+  margin-bottom: 20px;
+}
+
+.titletextarea {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  width: 795px;
+  height: auto;
+  border: none;
+}
+
+.submitbutton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  background-color: #0A3085;
+  color: white;
+  padding-left: 100px;
+  padding-right: 100px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: -8px;
+  border: none;
+  box-shadow: 0 0 3px 2px #888888;
+  cursor: pointer;
+}
+
+.text-editor-header i{
+  color:white;
+}
+
+.centerbutton{
+  position: relative;
+}
+
+.text-editor-header .btn {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  margin-right: 5px;
+  cursor: pointer;
+
+}
+
+#ImgCmd {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.content {
+  min-height: 200px;
+  border: 1px solid #ecf0f1;
+  border-top: 0px;
+  padding: 20px;
+}
+
+.topbox h4{
+  padding-top: 10px;
+  padding-left: 170px;
+  background-color: rgba(19, 43, 94, 0.9);
+  height: 2px;
+}
+
+.banner img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 2px;
+  margin-bottom: -15px;
+}
+
+.back button{
+  position: absolute;
+  bottom: 2%;
+  left: 2%;
+  background-color: #0A3085;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: none;
+  box-shadow: 0 0 3px 2px #888888;
+  cursor: pointer;
+}

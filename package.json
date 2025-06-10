@@ -1,0 +1,15 @@
+{
+  "name": "TheVincentSphere",
+  "version": "1.0.0",
+  "main": "thread.js",
+  "scripts": {
+    "start": "node thread.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "multer": "^2.0.1",
+    "sanitize-html": "^2.17.0",
+    "sqlite3": "^5.1.6"
+  }
+}

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Thread</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script src = "/TextEditor.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.1/dist/purify.min.js"></script>
+		<style>
+			.content img {
+			  max-width: 300px; 
+			  height: auto;
+			  display: block;
+			  margin: 10px 0;
+			}
+		</style>
+    <link rel="stylesheet" href="/threadstyle.css">
+	</head>
+
+	<body>
+		<div id="posts"></div>
+	</body>
+
+	<script>
+		function syncEditorsC(form) {
+		  const editors = form.querySelectorAll('.editor');
+		  let valid = true;
+		  editors.forEach(editor => {
+		    const name = editor.dataset.name;
+		    const input = form.querySelector(`input[name="${name}"]`);
+		    const html = editor.innerHTML.trim();
+
+		    const hasText = editor.innerText.trim().length > 0;
+
+		    const hasImageOrEmbed = editor.querySelector('img, iframe');
+
+		    if (!hasText && !hasImageOrEmbed) {
+		      valid = false;
+		    }
+
+		    if (input) input.value = html;
+		  });
+
+		  if (!valid) {
+		    alert('Please enter some text or add an image/video before submitting.');
+		    return false;
+		  }
+		  
+		  form.submit();
+		}
+
+		function uploadImage(event, targetEditor) {
+		  const file = event.target.files[0];
+		  if (!file) return alert('No image selected');
+
+		  const formData = new FormData();
+		  formData.append('image', file);
+
+		  fetch('/upload-image', {
+		    method: 'POST',
+		    body: formData
+		  })
+		    .then(res => res.json())
+		    .then(data => {
+		      const imageUrl = data.url;
+		      targetEditor.innerHTML += `<img src="${imageUrl}" alt="uploaded image" style="max-width: 300px;">`;
+		      event.target.value = ''; 
+		    })
+		    .catch(err => {
+		      console.error(err);
+		      alert('Upload failed');
+		    });
+		}
+
+		var postId = Number(window.location.search.slice(1));
+
+		fetch('/api/posts')
+		  .then(res => res.json())
+		  .then(posts => {
+		    const singlePost = posts.find(p => p.id === postId);
+		    const postsDiv = document.getElementById('posts');
+
+		    const commentId = `comment-form-${singlePost.id}`;
+	        const commentsHtml = singlePost.comments.map((c, index) => {
+	            const replyFormId = `reply-form-${singlePost.id}-${index}`;
+
+				let originalContent = c.content;
+				const quoteMatch = originalContent.match(/^"(.*?)"\s*\n\n([\s\S]*)$/s);
+				if (quoteMatch) {
+				  originalContent = quoteMatch[2].trim();
+				}
+				const safeQuote = originalContent.replace(/"/g, '&quot;');
+
+	            return `
+	              <div class="comment">
+	                <div class="comment-meta">Anonymous, ${new Date(c.created_at).toLocaleString()}</div>
+	                <div class="comment-content-text">${
+					  c.content.replace(/^"(.*)"\n\n/, (match, quoteText) => {
+					    return `<div class="quoted-text">"${quoteText}"</div>`;
+					  })
+					}</div>
+
+	                <form id="${replyFormId}" action="/comment/${singlePost.id}" method="POST" class="reply-form" style="display:none;">
+	                  <div class="quote-area" style="display:none;">
+	                  	<input type="hidden" name="quote" value="${safeQuote}">
+	                  	<div class="quoted-text">${safeQuote}</div>
+	                  </div>
+
+	                  <div class="text-editor">
+						  <div class="text-editor-header">
+							<button type="button" class="btn" data-element="bold">
+								<i class="fa fa-bold"></i>
+							</button>
+							<button type="button" class="btn" data-element="italic">
+								<i class="fa fa-italic"></i>
+							</button>
+							<button type="button" class="btn" data-element="underline">
+								<i class="fa fa-underline"></i>
+							</button>
+							<button type="button" class="btn" data-element="insertUnorderedList">
+								<i class="fa fa-list-ul"></i>
+							</button>
+							<button type="button" class="btn" data-element="insertOrderedList">
+								<i class="fa fa-list-ol"></i>
+							</button>
+							<button type="button" class="btn" data-element="createLink">
+								<i class="fa fa-link"></i>
+							</button>
+							<button type="button" class="btn" data-element="insertYoutube">
+								<i class="fa fa-youtube-play"></i>
+							</button>
+							<button type="button" class="btn" data-element="justifyLeft">
+								<i class="fa fa-align-left"></i>
+							</button>
+							<button type="button" class="btn" data-element="justifyCenter">
+								<i class="fa fa-align-center"></i>
+							</button>
+							<button type="button" class="btn" data-element="justifyRight">
+								<i class="fa fa-align-right"></i>
+							</button>
+							<button type="button" class="btn" data-element="justifyFull">
+								<i class="fa fa-align-justify"></i>
+							</button>
+							<input type="file" class="fileInput" accept="image/*" style="display: none">
+							<button type="button" class = "ImgCmd">
+								<i class="fa fa-image"></i>
+							</button>
+						  </div>
+
+			              <div contenteditable="true" class="editor" data-name="content" placeholder="Reply"></div>
+						  <input type="hidden" name="content">
+					  </div>
+		              <br>
+		              <button type="button" class="exit-reply-button">X</button>
+	                </form>
+	                <button class="reply-btn" data-form-id="${replyFormId}">Reply</button>
+	                <br><br>
+	              </div>
+	            `;
+	          }).join('');
+
+		    var headerHtml = `
+        <div class="topbox">
+				  <div class="banner">
+            <img src="banners/evangelion.jpg" height="175px">
+          </div>
+				  <h4> <a href = "../index.html"> Home</a> &#160;&gt;&#160; <a href = "/general"> Thoughts & Ideas</a> &#160;&gt;&#160; <a href = "/thread?${postId}">${singlePost.title} </a> </h4>
+        </div>
+        <div class="entire-post">
+          <div class="centered-post">
+            <div class="post-information">
+      				<h4 class = "title"> 
+      					${singlePost.title} 
+      				</h4>
+      				<div class = "bottom"> 
+      					<p class = "timestamp">
+      						${new Date(singlePost.created_at).toLocaleString()}
+      					</p>
+      					<div class="content" data-raw="${encodeURIComponent(singlePost.content)}"></div>
+      				</div>
+            </div>
+          </div>
+  				<form id="${commentId}" action="/comment/${singlePost.id}" method="POST" class="comment-form">
+  					<div class="comment-input" style="display: none;">
+  						<div class="text-editor">
+  							<div class="text-editor-header">
+  								<button type="button" class="btn" data-element="bold">
+  									<i class="fa fa-bold"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="italic">
+  									<i class="fa fa-italic"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="underline">
+  									<i class="fa fa-underline"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="insertUnorderedList">
+  									<i class="fa fa-list-ul"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="insertOrderedList">
+  									<i class="fa fa-list-ol"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="createLink">
+  									<i class="fa fa-link"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="insertYoutube">
+  									<i class="fa fa-youtube-play"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="justifyLeft">
+  									<i class="fa fa-align-left"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="justifyCenter">
+  									<i class="fa fa-align-center"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="justifyRight">
+  									<i class="fa fa-align-right"></i>
+  								</button>
+  								<button type="button" class="btn" data-element="justifyFull">
+  									<i class="fa fa-align-justify"></i>
+  								</button>
+  								<input type="file" class="fileInput" accept="image/*" style="display: none">
+  								<button type="button" class = "ImgCmd">
+  									<i class="fa fa-image"></i>
+  								</button>
+  							</div>
+
+  							<div contenteditable="true" class="editor" data-name="content" placeholder="Text"></div>
+  							<input type="hidden" name="content">
+  						</div>
+  						<br>
+  						<button type="button" class="exit-comment-button">X</button>
+  					</div>
+  					<button type="button" class="comment-button" data-post-id="${singlePost.id}">Add Comment</button><br><br>
+  				</form>
+        </div>
+			`
+
+			var commentsection = `${commentsHtml}`
+
+			postsDiv.insertAdjacentHTML('beforeend', headerHtml);
+			postsDiv.insertAdjacentHTML('beforeend', commentsection);
+
+			document.querySelectorAll('.content').forEach(div => {
+			  const rawHtml = decodeURIComponent(div.dataset.raw || '');
+			  div.innerHTML = DOMPurify.sanitize(rawHtml, {
+			    ALLOWED_TAGS: ['img', 'b', 'i', 'u', 'a', 'ul', 'ol', 'li', 'br', 'p', 'iframe'],
+			    ALLOWED_ATTR: ['src', 'href', 'width', 'height', 'frameborder', 'allowfullscreen']
+			  });
+			});
+
+			document.addEventListener('click', (event) => {
+			  const imgButton = event.target.closest('.ImgCmd');
+			  if (!imgButton) return;
+
+			  const editorContainer = imgButton.closest('.text-editor');
+			  if (!editorContainer) return;
+
+			  const fileInput = editorContainer.querySelector('.fileInput');
+			  const contentBox = editorContainer.querySelector('.editor');
+
+			  if (!fileInput || !contentBox) return;
+
+			  fileInput.click();
+
+			  fileInput.onchange = (e) => {
+			    const file = e.target.files[0];
+			    if (!file) return alert('No image selected');
+
+			    const formData = new FormData();
+			    formData.append('image', file);
+
+			    fetch('/upload-image', {
+			      method: 'POST',
+			      body: formData
+			    })
+			      .then(res => res.json())
+			      .then(data => {
+			        const imageUrl = data.url;
+			        contentBox.innerHTML += `<img src="${imageUrl}" alt="uploaded image" style="max-width: 300px;">`;
+			        fileInput.value = ''; 
+			      })
+			      .catch(err => {
+			        console.error(err);
+			        alert('Upload failed');
+			      });
+			  };
+			});
+
+			document.querySelectorAll('.comment-button').forEach(button => {
+	          button.addEventListener('click', (e) => {
+	            const postId = button.getAttribute('data-post-id');
+	            const form = document.getElementById(`comment-form-${postId}`);
+	            const textareaDiv = form.querySelector('.comment-input');
+	            const textarea = textareaDiv.querySelector('.editor');
+
+	            var exitbutton = document.querySelector('.exit-comment-button');
+	        	exitbutton.addEventListener('click', function() {
+	        		textareaDiv.style.display = 'none';
+	        	});
+
+				var elements = document.querySelectorAll('.text-editor .btn');
+					elements.forEach(element => {
+		        	element.addEventListener('click', () => {
+		        	let command = element.dataset['element'];
+
+				    if (command == 'createLink') {
+				      let url = prompt('Enter the link here:');
+				      document.execCommand(command, false, url);
+				      textarea.focus();
+				    }
+				    else if (command != 'insertYoutube') {
+				      document.execCommand(command, false, null);
+				      textarea.focus();
+				    }
+				    else {
+				      let yturl = prompt('Enter the link here:');
+				      document.execCommand("createLink", false, yturl);
+
+				      const ytElement = document.createElement('iframe');
+				      const breakline = document.createElement('br')
+				      const targetDiv = document.querySelector('.editor');
+				      let embedid = youtube_parser(yturl);
+
+				      ytElement.src = 'https://www.youtube.com/embed/' + embedid;
+				      ytElement.width = '420';
+				      ytElement.height = '315';
+				      ytElement.frameBorder = '0';
+
+				      targetDiv.appendChild(breakline);
+				      targetDiv.appendChild(ytElement);
+				      textarea.focus();
+				    }
+				  })
+				})
+
+	            if (textareaDiv.style.display === 'none') {
+				  textareaDiv.style.display = 'block';
+				  textarea.focus();
+				} else {
+				  if (textarea.innerText.trim() === '') {
+				    textarea.focus();
+				  } else {
+				    syncEditorsC(form);
+				  }
+				};
+
+	          });
+	        });
+
+			document.querySelectorAll('.reply-btn').forEach(button => {
+	          button.addEventListener('click', () => {
+	            const formId = button.getAttribute('data-form-id');
+	            const form = document.getElementById(formId);
+	            const textarea = form.querySelector('.editor');
+
+				var elements = document.querySelectorAll('.text-editor .btn');
+					elements.forEach(element => {
+		        	element.addEventListener('click', () => {
+		        	let command = element.dataset['element'];
+
+				    if (command == 'createLink') {
+				      let url = prompt('Enter the link here:');
+				      document.execCommand(command, false, url);
+				      textarea.focus();
+				    }
+				    else if (command != 'insertYoutube') {
+				      document.execCommand(command, false, null);
+				      textarea.focus();
+				    }
+				    else {
+				      let yturl = prompt('Enter the link here:');
+				      document.execCommand("createLink", false, yturl);
+
+				      const ytElement = document.createElement('iframe');
+				      const breakline = document.createElement('br')
+				      let embedid = youtube_parser(yturl);
+
+				      ytElement.src = 'https://www.youtube.com/embed/' + embedid;
+				      ytElement.width = '420';
+				      ytElement.height = '315';
+				      ytElement.frameBorder = '0';
+
+				      textarea.appendChild(breakline);
+				      textarea.appendChild(ytElement);
+				      textarea.focus();
+				    }
+				  })
+				})
+
+	            if (form.style.display === 'none') {
+	              form.style.display = 'block';
+	              textarea.focus();
+	            } else {
+	              if (textarea.innerText.trim() === '') {
+	                textarea.focus();
+	              } else {
+	                syncEditorsC(form);
+	              }
+	            }
+
+	            const exitbutton2 = document.querySelectorAll('.exit-reply-button');
+	            exitbutton2.forEach(button => {
+	        		button.addEventListener('click', function() {
+	        			form.style.display = 'none';
+	        		})
+	        	})
+	          });
+	        });
+
+
+		  });
+
+	</script>
+</html>
