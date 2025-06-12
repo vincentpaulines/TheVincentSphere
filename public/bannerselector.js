@@ -1,6 +1,10 @@
 var bannerimages = [
   "dragonicoverlord.png",
-  "evangelion.jpg"
+  "evangelion.jpg",
+  "richpiana.jpg", 
+  "madokaandfriends.jpg",
+  "yosuganosora.png",
+  "pokemonblack.gif"
 ];
 
 document.addEventListener('DOMContentLoaded', _ => {
